@@ -1,0 +1,240 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1000"
+        x:Class="DingExcelTool.MainWindow"
+        Title="表格工具" Width="800" Height="1000">
+	<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+		<Image Name="TeamLogoImg" Grid.ColumnSpan="8" Width="150" Height="75" HorizontalAlignment="Center"/>
+		
+		<TabControl Grid.Row="1">
+			<TabItem Header="导表">
+				<Grid ShowGridLines = "False">
+			        <Grid.RowDefinitions>
+			            <RowDefinition Height="auto"/>
+			            <RowDefinition Height="auto"/>
+			            <RowDefinition Height="auto"/>
+			            <RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+			            <RowDefinition/>
+			        </Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="auto"/>
+					</Grid.ColumnDefinitions>
+					
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="输入" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5"/>
+			        
+					<TextBlock Grid.Row="1" Grid.Column="1" Text="表文件夹:" VerticalAlignment="Center" Margin="5"/>
+			        <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Name="tb_excelPath" VerticalAlignment="Center"/>
+					<Button Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Left" Content="..." Click="Btn_excelFolderSelector"/>
+
+					<TextBlock Grid.Row="2" Grid.Column="0" Text="输出" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5"/>
+
+					<CheckBox Name="clientCheckBox" Grid.Row="3" Grid.Column="1" Content="客户端" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0" Checked="CheckBox_clientStateChanged" IsChecked="True" Unchecked="CheckBox_clientStateChanged"/>
+			        <Grid ShowGridLines = "False" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Margin="5" IsVisible="{Binding IsChecked, ElementName=clientCheckBox}">
+			            <Grid.RowDefinitions>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition/>
+			            </Grid.RowDefinitions>
+			            <Grid.ColumnDefinitions>
+			                <ColumnDefinition Width="auto"/>
+			                <ColumnDefinition Width="*"/>
+			                <ColumnDefinition Width="auto"/>
+			            </Grid.ColumnDefinitions>
+
+			            <TextBlock Grid.Row="0" Grid.Column="0" Text="脚本语言:" VerticalAlignment="Center"/>
+						<ComboBox Grid.Row="0" Grid.Column="1" Name="cb_clientScriptType" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="CB_clientScriptTypeChanged">
+			                <ComboBoxItem IsSelected="True" Content="C#"/>
+			            </ComboBox>
+
+			            <TextBlock Grid.Row="1" Grid.Column="0" Text="pb原型文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="1" Grid.Column="1" Name="tb_clientPBMetaPath" VerticalAlignment="Center" />
+						<Button Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientPBmetaFolderSelector"/>
+
+			            <TextBlock Grid.Row="2" Grid.Column="0" Text="pb脚本文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="2" Grid.Column="1" Name="tb_clientPBScriptPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientPBScriptFolderSelector"/>
+
+			            <TextBlock Grid.Row="3" Grid.Column="0" Text="pb数据文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="3" Grid.Column="1" Name="tb_clientPBDataPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientPBDataFolderSelector"/>
+
+			            <TextBlock Grid.Row="4" Grid.Column="0" Text="excel脚本文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="4" Grid.Column="1" Name="tb_clientExcelScriptPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientExcelScriptFolderSelector"/>
+
+			            <TextBlock Grid.Row="5" Grid.Column="0" Text="EC Frame文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="5" Grid.Column="1" Name="tb_clientErrorcodeFramePath" VerticalAlignment="Center"/>
+						<Button Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientECFrameFolderSelector"/>
+
+			            <TextBlock Grid.Row="6" Grid.Column="0" Text="EC Business文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="6" Grid.Column="1" Name="tb_clientErrorcodeBusinessPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="6" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_clientECBusinessFolderSelector"/>
+			        </Grid>
+
+					<CheckBox Name="serverCheckBox" Grid.Row="3" Grid.Column="5" Content="服务器" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"  Checked="CheckBox_serverStateChanged" IsChecked="True" Unchecked="CheckBox_serverStateChanged"/>
+					<Grid ShowGridLines="False" Grid.Row="4" Grid.Column="5" Grid.ColumnSpan="3" Margin="5" IsVisible="{Binding IsChecked, ElementName=serverCheckBox}">
+			            <Grid.RowDefinitions>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition Height="40"/>
+			                <RowDefinition/>
+			            </Grid.RowDefinitions>
+			            <Grid.ColumnDefinitions>
+			                <ColumnDefinition Width="auto"/>
+			                <ColumnDefinition Width="*"/>
+			                <ColumnDefinition Width="auto"/>
+			            </Grid.ColumnDefinitions>
+
+			            <TextBlock Grid.Row="0" Grid.Column="0" Text="脚本语言:" VerticalAlignment="Center"/>
+						<ComboBox Grid.Row="0" Grid.Column="1" Name="cb_serverScriptType" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="CB_serverScriptTypeChanged">
+			                <ComboBoxItem IsSelected="True" Content="C#"/>
+			            </ComboBox>
+
+			            <TextBlock Grid.Row="1" Grid.Column="0" Text="pb原型文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="1" Grid.Column="1" Name="tb_serverPBMetaPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverPBMetaFolderSelector"/>
+
+			            <TextBlock Grid.Row="2" Grid.Column="0" Text="pb脚本文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="2" Grid.Column="1" Name="tb_serverPBScriptPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverPBScriptFolderSelector"/>
+
+			            <TextBlock Grid.Row="3" Grid.Column="0" Text="pb数据文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="3" Grid.Column="1" Name="tb_serverPBDataPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverPBDataFolderSelector"/>
+
+			            <TextBlock Grid.Row="4" Grid.Column="0" Text="excel脚本文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="4" Grid.Column="1" Name="tb_serverExcelScriptPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverExcelScriptFolderSelector"/>
+
+			            <TextBlock Grid.Row="5" Grid.Column="0" Text="EC Frame文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="5" Grid.Column="1" Name="tb_serverErrorcodeFramePath" VerticalAlignment="Center"/>
+						<Button Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverECFrameFolderSelector"/>
+
+						<TextBlock Grid.Row="6" Grid.Column="0" Text="EC Business文件夹:" VerticalAlignment="Center"/>
+			            <TextBox Grid.Row="6" Grid.Column="1" Name="tb_serverErrorcodeBusinessPath" VerticalAlignment="Center"/>
+						<Button Grid.Row="6" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_serverECBusinessFolderSelector"/>
+					</Grid>
+				</Grid>
+			</TabItem>
+			<TabItem Header="多语言">
+				<Grid ShowGridLines = "False">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition Height="auto"/>
+						<RowDefinition/>
+					</Grid.RowDefinitions>
+					
+					<StackPanel Orientation="Horizontal" Margin="10">
+						<TextBlock Text="多语言表文件夹:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_languageExcelDir" VerticalAlignment="Center"/>
+						<Button VerticalAlignment="Center" HorizontalAlignment="Left" Content="..." Click="Btn_languageExcelFolderSelector"/>	
+					</StackPanel>
+					
+					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="代码文件夹根目录:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_languageScriptRootDir" VerticalAlignment="Center"/>
+						<Button VerticalAlignment="Center" HorizontalAlignment="Left" Content="..." Click="Btn_languageScriptFolderSelector"/>	
+					</StackPanel>
+					
+					<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="UI文件夹根目录:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_languageUIRootDir" VerticalAlignment="Center"/>
+						<Button VerticalAlignment="Center" HorizontalAlignment="Left" Content="..." Click="Btn_languageUIFolderSelector"/>	
+					</StackPanel>
+					
+					<StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="多语言表备份文件夹:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_languageBackupDir" VerticalAlignment="Center"/>
+						<Button VerticalAlignment="Center" HorizontalAlignment="Left" Content="..." Click="Btn_languageBackupFolderSelector"/>	
+					</StackPanel>
+					
+					<StackPanel Grid.Row="4" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="原始语言:" VerticalAlignment="Center"/>
+						<ComboBox Name="cb_sourceLanguage" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="CB_sourceLanguageChanged"/>
+					</StackPanel>
+					
+					<StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="文本替换方法名:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_languageReplaceMethod" VerticalAlignment="Center" TextChanged="TB_languageReplaceMethodChanged"/>	
+					</StackPanel>
+					<StackPanel Grid.Row="6" Orientation="Horizontal" Margin="10">
+						<TextBlock Text="图片替换方法名:" VerticalAlignment="Center"/>
+						<TextBox Name="tb_imageReplaceMethod" VerticalAlignment="Center" TextChanged="TB_imageReplaceMethodChanged"/>	
+					</StackPanel>
+				</Grid>
+			</TabItem>
+		</TabControl>
+		
+		<Grid ShowGridLines = "False" Name="grid_batch" Grid.Row="2" Margin="10" IsVisible="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="前处理脚本:" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Name="tb_preProcessPath" VerticalAlignment="Center"/>
+			<Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_preProcessSelector"/>
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="参数:" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBox Grid.Row="0" Grid.Column="4" Name="tb_preProcessArgs" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="后处理脚本:" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Name="tb_aftProcessPath" VerticalAlignment="Center"/>
+			<Button Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Content="..." Click="Btn_aftProcessSelector"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" Text="参数:" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBox Grid.Row="1" Grid.Column="4" Name="tb_aftProcessArgs" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Grid>
+
+        <Grid ShowGridLines = "False" Grid.Row="3" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+			<ComboBox Grid.Column="0" Name="cb_action" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200" Margin="5,0" SelectionChanged="CB_actionTypeChanged"/>
+			<Button Grid.Column="1" Name="btn_action" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" Content="执行" Margin="5,0" Click="Btn_excute"/>
+        </Grid>
+
+        <TextBlock Grid.Row="4" TextWrapping="Wrap" Margin="5">
+	        此工具用于Excel表的导出<LineBreak/>
+			导出的文件夹内，不要存在其他无关的文件<LineBreak/>
+	        多语言只对客户端有效<LineBreak/>
+	        更多详情：<HyperlinkButton Content="github地址" NavigateUri="https://github.com/cookgoing/DingExcelTool#"/>
+        </TextBlock>
+
+        <ListBox Name="list_log" Grid.Row="5" Margin="5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBoxItem>Log 1</ListBoxItem>
+            <ListBoxItem>Log 2</ListBoxItem>
+            <ListBoxItem>Log 3</ListBoxItem>
+            <ListBoxItem>Log 4</ListBoxItem>
+            <ListBoxItem>Log 5</ListBoxItem>
+        </ListBox>
+	</Grid>
+</Window>

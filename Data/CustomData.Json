@@ -1,0 +1,37 @@
+{
+  "ExcelInputRootDir": "D:\\Work\\GenesisRelic\\Excel\\Files",
+  "OutputClient": true,
+  "OutputServer": true,
+  "ClientOutputInfo": {
+    "ScriptType": 0,
+    "ProtoMetaOutputDir": "D:\\Work\\GenesisRelic\\Excel\\protoMeta\\client",
+    "ProtoScriptOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Scripts\\Business\\Data\\Excel\\protoScript",
+    "ProtoDataOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Res_dynamic\\Resources\\ExcelData\\proto",
+    "ExcelScriptOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Scripts\\Business\\Data\\Excel\\excelScript",
+    "ErrorCodeFrameDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Scripts\\DingFrame",
+    "ErrorCodeBusinessDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Scripts\\Business\\Data"
+  },
+  "ServerOutputInfo": {
+    "ScriptType": 0,
+    "ProtoMetaOutputDir": "D:\\Work\\GenesisRelic\\Excel\\protoMeta\\server",
+    "ProtoScriptOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Server\\protoScript",
+    "ProtoDataOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Server\\proto",
+    "ExcelScriptOutputDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Server\\excelScript",
+    "ErrorCodeFrameDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Server\\errorcode",
+    "ErrorCodeBusinessDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Server\\errorcode"
+  },
+  "Language": {
+    "LanguageExcelDir": "D:\\Work\\GenesisRelic\\Excel\\Files\\Language",
+    "ScriptRootDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets\\Scripts\\Business",
+    "UIRootDir": "D:\\Work\\GenesisRelic\\GenesisRelic_Client\\Assets",
+    "LanguageBackupDir": "D:\\Work\\GenesisRelic\\LanguageBackUp",
+    "SourceLanguage": "zh_CN",
+    "LanguageReplaceMethod": "DingFrame.Module.Localization.LocalizationModule.GetStr(hashID)",
+    "ImageReplaceMethod": "DingFrame.Module.Localization.LocalizationModule.GetImgPath(hashID)"
+  },
+  "PreHanleProgramFile": null,
+  "PreHanleProgramArgument": null,
+  "AftHanleProgramFile": null,
+  "AftHanleProgramArgument": null,
+  "LastSelectedActionIdx": 0
+}

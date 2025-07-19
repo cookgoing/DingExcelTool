@@ -1,0 +1,47 @@
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using Google.Protobuf;
+using DingFrame.Module;
+using DingFrame.Module.AssetLoader;
+
+namespace Business.Data.Excel
+{
+    public class {scriptName}
+    {
+        public static {scriptName} Ins{get; private set;}
+
+        public {messageName}[] Datas{get; private set;}
+        {dicFieldSB}
+
+        public static {scriptName} CreateIns()
+        {
+            if (Ins != null) return Ins;
+
+            Ins = new {scriptName}();
+            Ins.ParseProto();
+            Ins.GenerateKV();
+            return Ins;
+        }
+
+        public static void ReleaseIns() => Ins = null;
+
+        private void ParseProto()
+        {
+            string protoDataPath = Path.Combine(GameConfigure.ExcelProtoDataPath, "{dataFileName}");
+            byte[] serializedData = File.ReadAllBytes(protoDataPath);
+            {excelListScriptName} msgList = {excelListScriptName}.Parser.ParseFrom(serializedData);
+
+            Datas = msgList.{excelListScriptPropertyName}.ToArray();
+        }
+
+        private void GenerateKV()
+        {
+            foreach({messageName} item in Datas)
+            {
+                {classificationActionSB}
+            }
+        }
+    }
+}

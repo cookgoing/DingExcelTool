@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.7"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.2.7">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ClosedXML" Version="0.105.0" />
+        <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
+        <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="System.IO.Hashing" Version="9.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="images\teamLogo.png" />
+      <Content Include="images\teamLogo.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Data\CustomData.Json" />
+      <Content Include="Data\CustomData.Json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Data\DefaultData.Json" />
+      <Content Include="Data\DefaultData.Json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Update="tools\protoc.exe">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Remove="Data\Client_CSharp_ExcelSccriptTemplate.txt" />
+      <Content Include="Data\Client_CSharp_ExcelSccriptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Data\Server_CSharp_ExcelSccriptTemplate.txt" />
+      <Content Include="Data\Server_CSharp_ExcelSccriptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Compile Remove="Data\Language\CodeLanguageHandler.cs" />
+      <Content Include="Data\Language\CodeLanguageHandler.cs">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Compile Remove="Data\Language\OuterLanguageHandler.cs" />
+      <Content Include="Data\Language\OuterLanguageHandler.cs">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Compile Remove="Data\Language\UILanguageHandler.cs" />
+      <Content Include="Data\Language\UILanguageHandler.cs">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Update="Plugins\System.Xml.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+</Project>
