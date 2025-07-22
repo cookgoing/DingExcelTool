@@ -131,7 +131,7 @@
             var (type, obj) = GetTypeObj(scriptName);
             string csFieldName = FieldNameInProtoCS(fieldName);
             FieldInfo fieldInfo = type.GetField(csFieldName, BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"[SetScriptProperty] C#脚本[{scriptName}]中，没有这个字段：{csFieldName}; excel field name: {fieldName}");
-            object value = ExcelType2ScriptType(typeStr, valueStr);
+            object value = ExcelType2ScriptType(typeStr, valueStr, $"{scriptName}-{fieldName}");
             fieldInfo.SetValue(obj, value);
         }
         public void AddScriptList(string scriptName, string fieldName, string typeStr, string valueStr)
@@ -139,7 +139,7 @@
             if (!ExcelUtil.IsArrType(typeStr)) throw new Exception($"[AddScriptList] 逻辑错误 不是数组类型，不能使用这个方法");
 
             string elementType = typeStr.Substring(0, typeStr.Length - 2);
-            object value = ExcelType2ScriptType(elementType, valueStr);
+            object value = ExcelType2ScriptType(elementType, valueStr, $"{scriptName}-{fieldName}");
 
             var (type, obj) = GetTypeObj(scriptName);
             fieldName = FieldNameInProtoCS(fieldName);
@@ -156,8 +156,8 @@
             string innerTypes = typeStr.Substring(4, typeStr.Length - 5);
             string[] keyValue = innerTypes.Split(',');
             string kType = ExcelUtil.ClearTypeSymbol(keyValue[0]), vType = ExcelUtil.ClearTypeSymbol(keyValue[1]);
-            object kValue = ExcelType2ScriptType(kType, keyData);
-            object vValue = ExcelType2ScriptType(vType, valueData);
+            object kValue = ExcelType2ScriptType(kType, keyData, $"{scriptName}-{fieldName}");
+            object vValue = ExcelType2ScriptType(vType, valueData, $"{scriptName}-{fieldName}");
 
             var (type, obj) = GetTypeObj(scriptName);
             fieldName = FieldNameInProtoCS(fieldName);
@@ -301,14 +301,14 @@
 
         public bool RemoveObj(string scriptName) => objDic.TryRemove(scriptName, out _);
 
-        public object ExcelType2ScriptType(string typeStr, string valueStr)
+        public object ExcelType2ScriptType(string typeStr, string valueStr, string tag)
         {
             if (ExcelUtil.IsBaseType(typeStr))
             {
                 switch (typeStr)
                 {
                     case "int":
-                        if (!int.TryParse(valueStr, out int intValue)) throw new Exception($"[CSharpHandler] 内容不能转换。 type: {typeStr}; value: {valueStr}");
+                        if (!int.TryParse(valueStr, out int intValue)) throw new Exception($"[CSharpHandler] 内容不能转换。 tag: {tag} type: {typeStr}; value: {valueStr}");
 
                         return intValue;
                     case "long":

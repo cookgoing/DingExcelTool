@@ -60,7 +60,7 @@ namespace DingExcelTool.ScriptHandler
                     string[] valueStrArr = fieldInfo.Value.Split(SpecialExcelCfg.SingleArrMapSplitSymbol);
                     foreach (string str in valueStrArr)
                     {
-                        string value = CSharpExcelHandler.Instance.ExcelType2ScriptType(baseType, str).ToString();
+                        string value = CSharpExcelHandler.Instance.ExcelType2ScriptType(baseType, str, $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
                         if (baseType == "string") value = $"\"{value}\"";
                         else if (baseType == "bool") value = value?.ToLower();
                         sb.Append(value).Append(',');    
@@ -79,8 +79,8 @@ namespace DingExcelTool.ScriptHandler
                     foreach (string kvStr in valueStrArr)
                     {
                         string[] kvStrArr = kvStr.Split(SpecialExcelCfg.SingleMapKVSplitSymbol);
-                        string kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0]).ToString();
-                        string vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1]).ToString();
+                        string kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0], $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                        string vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1], $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
                         if (kType == "string") kValue = $"\"{kValue}\"";
                         else if (kType == "bool") kValue = kValue?.ToLower();
                         if (vType == "string") vValue = $"\"{vValue}\"";
@@ -93,7 +93,7 @@ namespace DingExcelTool.ScriptHandler
                 }
                 else
                 {
-                    filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldInfo.Value).ToString();
+                    filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldInfo.Value, $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
                     if (fieldInfo.Type == "string") filedValue = $"\"{filedValue}\"";
                     else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();
                 }
