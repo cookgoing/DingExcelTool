@@ -95,12 +95,13 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
             string scriptName = sheetCount == 1 ? $"{excelName}" : $"{excelName}_{sheet.Name}";
             if (!singleExcelHandler.HeadInfoDic.TryGetValue(scriptName, out SingleExcelHeadInfo headInfo)) throw new Exception($"[LanguageReplaceAsync]. 表：{scriptName}; 没有表头信息");
 
-            StringBuilder fieldSB = new();
+            StringBuilder fieldSB = new(), fucSB = new("\t\tpublic static void ResetLanguage()\n\t\t{\n");
             foreach (SingleExcelFieldInfo fieldInfo in headInfo.Fields)
             {
                 if ((platform & fieldInfo.Platform) == 0) continue;
 
                 string filedValue;
+                bool needNewField = false;
                 if (ExcelUtil.IsArrType(fieldInfo.Type))
                 {
                     StringBuilder sb = new("new[] {");
@@ -108,6 +109,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                     string[] valueStrArr = fieldInfo.Value.Split(SpecialExcelCfg.SingleArrMapSplitSymbol);
                     if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v || fieldInfo.LocalizationImg.k || fieldInfo.LocalizationImg.v)
                     {
+                        needNewField = true;
                         var dic = fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v ? languageDic : imageDic;
                         var fucName = fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v ? languageReplaceFucName : imageReplaceFucName;
                         foreach (string str in valueStrArr)
@@ -148,6 +150,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                         string kValue, vValue;
                         if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationImg.k)
                         {
+                            needNewField = true;
                             var dic = fieldInfo.LocalizationTxt.k ? languageDic : imageDic;
                             var fucName = fieldInfo.LocalizationTxt.k? languageReplaceFucName : imageReplaceFucName;
                             if (!dic.TryGetValue(kvStrArr[0], out int hashId))
@@ -166,6 +169,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                         
                         if (fieldInfo.LocalizationTxt.v || fieldInfo.LocalizationImg.v)
                         {
+                            needNewField = true;
                             var dic = fieldInfo.LocalizationTxt.v ? languageDic : imageDic;
                             var fucName = fieldInfo.LocalizationTxt.v? languageReplaceFucName : imageReplaceFucName;
                             if (!dic.TryGetValue(kvStrArr[1], out int hashId))
@@ -211,15 +215,22 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                 if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v || fieldInfo.LocalizationImg.k || fieldInfo.LocalizationImg.v)
                 {
                     string typeStr = CSharpExcelHandler.Instance.ExcelType2ScriptTypeStr(fieldInfo.Type);
-                    string languageFieldName = $"{fieldInfo.Name}_language";
-                    fieldSB.AppendLine($"\t\tprivate static {typeStr} {languageFieldName};");
-                    fieldSB.Append($"\t\tpublic static {typeStr} {fieldInfo.Name} => {languageFieldName} ??= {filedValue};").AppendLine(string.IsNullOrEmpty(fieldInfo.Comment) ? null : "//" + fieldInfo.Comment);
+                    if (needNewField)
+                    {
+                        string languageFieldName = $"{fieldInfo.Name}_language";
+                        fieldSB.AppendLine($"\t\tprivate static {typeStr} {languageFieldName};");
+                        fieldSB.Append($"\t\tpublic static {typeStr} {fieldInfo.Name} => {languageFieldName} ??= {filedValue};").AppendLine(string.IsNullOrEmpty(fieldInfo.Comment) ? null : "//" + fieldInfo.Comment);
+                        fucSB.AppendLine($"\t\t\t{languageFieldName} = null;");
+                    }
+                    else fieldSB.Append($"\t\tpublic static {typeStr} {fieldInfo.Name} => {filedValue};").AppendLine(string.IsNullOrEmpty(fieldInfo.Comment) ? null : "//" + fieldInfo.Comment);
                 }
                 else fieldSB.Append($"\t\tpublic readonly static {CSharpExcelHandler.Instance.ExcelType2ScriptTypeStr(fieldInfo.Type)} {fieldInfo.Name} = {filedValue};").AppendLine(string.IsNullOrEmpty(fieldInfo.Comment) ? null : "//" + fieldInfo.Comment);
             }
             
             string outputFilePath = Path.Combine(excelScriptOutputDir, excelRelativeDir ?? "", $"{scriptName}{GeneralCfg.ExcelScriptFileSuffix(scriptType)}");
             using StreamWriter sw = new StreamWriter(outputFilePath);
+            fieldSB.Remove(fieldSB.Length - 1, 1);
+            fucSB.Append("\t\t}");
             StringBuilder scriptSB = new();
             scriptSB.AppendLine(@$"
 using System.Collections.Generic;
@@ -229,6 +240,8 @@ namespace {GeneralCfg.ProtoMetaPackageName}
     public static class {scriptName}
     {{
 {fieldSB}
+
+{fucSB}
     }}
 }}
 ");

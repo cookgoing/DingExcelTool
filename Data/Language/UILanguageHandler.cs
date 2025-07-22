@@ -28,7 +28,7 @@ public class UILanguageHandler : OuterLanguageHandler
 
         foreach (var node in nodes)
         {
-            bool isTextField = node.Name.LocalName == "DTextField";
+            bool isTextField = node.Name == "DingFrame.Module.TKUI.DTextField";
             var textAttr = node.Attribute(isTextField? "Placeholder" : "text");
             if (textAttr == null || string.IsNullOrEmpty(textAttr.Value)) continue;
             
@@ -50,7 +50,7 @@ public class UILanguageHandler : OuterLanguageHandler
         bool modified = false;
         foreach (var node in nodes)
         {
-            bool isTextField = node.Name.LocalName == "DTextField";
+            bool isTextField = node.Name == "DingFrame.Module.TKUI.DTextField";
             var textAttr = node.Attribute(isTextField? "Placeholder" : "text");
             if (textAttr == null || string.IsNullOrEmpty(textAttr.Value)) continue;
 
@@ -78,7 +78,7 @@ public class UILanguageHandler : OuterLanguageHandler
         bool modified = false;
         foreach (var node in nodes)
         {
-            bool isTextField = node.Name.LocalName == "DTextField";
+            bool isTextField = node.Name == "DingFrame.Module.TKUI.DTextField";
             var textAttr = node.Attribute(isTextField? "Placeholder" : "text");
             if (textAttr == null || string.IsNullOrEmpty(textAttr.Value)) continue;
 

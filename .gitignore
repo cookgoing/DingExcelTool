@@ -49,4 +49,4 @@ project.lock.json
 project.fragment.lock.json
 
 #inno setup
-InnoSetup/DingExcelToolInstall.exe
+InnoSetup/*.exe
