@@ -73,7 +73,7 @@ internal class LanguageManager : Singleton<LanguageManager>
         
         SyntaxTree[] syntaxTrees = new SyntaxTree[scriptContent.Length];
         for (int i = 0; i < scriptContent.Length; ++i) syntaxTrees[i] = CSharpSyntaxTree.ParseText(scriptContent[i]);
-
+        
         var tpa = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
         var needed = tpa.Where(p => new[]
                 {
@@ -87,7 +87,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                     "System.Private.Xml.Linq.dll",
                     "System.Private.Xml.dll"
                 }.Contains(Path.GetFileName(p))).Select(p => MetadataReference.CreateFromFile(p)).ToList();
-
+        
         CSharpCompilation compilation = CSharpCompilation.Create(
             "outLanguageHandlerAssembly",
             syntaxTrees: syntaxTrees,
@@ -177,7 +177,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 if (token.IsCancellationRequested) return;
                 
                 LogMessageHandler.AddInfo($"【收集多语言-ui】:{uiFilePath}");
-                Task<(HashSet<string>, HashSet<string>)> task = (Task<(HashSet<string>, HashSet<string>)>)uiMethodInfo.Invoke(uiObj, [uiFilePath]);
+                Task<(HashSet<string>, HashSet<string>)> task = (Task<(HashSet<string>, HashSet<string>)>)uiMethodInfo.Invoke(uiObj, [uiFilePath, LogMessageHandler.AddError]);
                 var (languageHash, imageHash) = await task;
                 UnionWith(languages, languageHash);
                 UnionWith(images, imageHash);
@@ -197,7 +197,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 if (token.IsCancellationRequested) return;
                 
                 LogMessageHandler.AddInfo($"【收集多语言-code】:{codeFilePath}");
-                Task<(HashSet<string>, HashSet<string>)> task = (Task<(HashSet<string>, HashSet<string>)>)codeMethodInfo.Invoke(codeObj, [codeFilePath]);
+                Task<(HashSet<string>, HashSet<string>)> task = (Task<(HashSet<string>, HashSet<string>)>)codeMethodInfo.Invoke(codeObj, [codeFilePath, LogMessageHandler.AddError]);
                 var (languageHash, imageHash) = await task;
                 UnionWith(languages, languageHash);
                 UnionWith(images, imageHash);
@@ -209,7 +209,8 @@ internal class LanguageManager : Singleton<LanguageManager>
                 cts.Cancel();
             }
         });
-    
+
+        BackupLanguageExcel();
         GenerateLanguageExcel(languages, true);
         GenerateLanguageExcel(images, false);
         return result;
@@ -244,7 +245,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 {
                     if (token.IsCancellationRequested) return;
                     LogMessageHandler.AddInfo($"【替换多语言-ui】:{uiFilePath}");
-                    await (Task)uiMethodInfo.Invoke(uiObj, [uiFilePath, languageDic, imageDic]);
+                    await (Task)uiMethodInfo.Invoke(uiObj, [uiFilePath, languageDic, imageDic, LogMessageHandler.AddError]);
                 }
                 catch (Exception e)
                 {
@@ -264,7 +265,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 {
                     if (token.IsCancellationRequested) return;
                     LogMessageHandler.AddInfo($"【替换多语言-code】:{codeFilePath}");
-                    await (Task)codeMethodInfo.Invoke(codeObj, [codeFilePath, languageDic, imageDic]);
+                    await (Task)codeMethodInfo.Invoke(codeObj, [codeFilePath, languageDic, imageDic, LogMessageHandler.AddError]);
                 }
                 catch (Exception e)
                 {
@@ -469,7 +470,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 {
                     if (token.IsCancellationRequested) return;
                     LogMessageHandler.AddInfo($"【还原多语言-ui】:{uiFilePath}");
-                    await (Task)uiMethodInfo.Invoke(uiObj, [uiFilePath, languageDicInverse, imageDicInverse]);
+                    await (Task)uiMethodInfo.Invoke(uiObj, [uiFilePath, languageDicInverse, imageDicInverse, LogMessageHandler.AddError]);
                 }
                 catch (Exception e)
                 {
@@ -489,7 +490,7 @@ internal class LanguageManager : Singleton<LanguageManager>
                 {
                     if (token.IsCancellationRequested) return;
                     LogMessageHandler.AddInfo($"【还原多语言-code】:{codeFilePath}");
-                    await (Task)codeMethodInfo.Invoke(codeObj, [codeFilePath, languageDicInverse, imageDicInverse]);
+                    await (Task)codeMethodInfo.Invoke(codeObj, [codeFilePath, languageDicInverse, imageDicInverse, LogMessageHandler.AddError]);
                 }
                 catch (Exception e)
                 {
@@ -501,11 +502,9 @@ internal class LanguageManager : Singleton<LanguageManager>
         }
         return result;
     }
-    
-    private void GenerateLanguageExcel(ConcurrentHashSet<string> hashSet, bool isLanguage)
+
+    private void BackupLanguageExcel()
     {
-        if (hashSet == null || hashSet.Count == 0) return;
-        
         string languageExcelDir = Data.Language.LanguageExcelDir;
         if (!Directory.Exists(languageExcelDir)) Directory.CreateDirectory(languageExcelDir);
         else
@@ -513,7 +512,12 @@ internal class LanguageManager : Singleton<LanguageManager>
             if (!Directory.Exists(Data.Language.LanguageBackupDir)) Directory.CreateDirectory(Data.Language.LanguageBackupDir);
             ExcelUtil.CopyDirectoryWithAutoRename(languageExcelDir, Data.Language.LanguageBackupDir);
         }
-
+    }
+    private void GenerateLanguageExcel(ConcurrentHashSet<string> hashSet, bool isLanguage)
+    {
+        if (hashSet == null || hashSet.Count == 0) return;
+        
+        string languageExcelDir = Data.Language.LanguageExcelDir;
         string excelFileName = isLanguage ? LanguageCfg.LanguageExcelName : LanguageCfg.ImageExcelName;
         string sheetName = isLanguage ? LanguageCfg.LanguageExcelSheetName : LanguageCfg.ImageExcelSheetName;
         var excelNameArr = isLanguage ? LanguageCfg.LanguageExcelNameArr : LanguageCfg.ImageExcelNameArr;

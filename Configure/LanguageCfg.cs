@@ -6,7 +6,7 @@ namespace DingExcelTool.Configure
     
     internal static class LanguageCfg
     {
-        public static readonly string LanguageExcelName = "Lanuage_{0}.xlsx";
+        public static readonly string LanguageExcelName = "Language_{0}.xlsx";
         public static readonly string ImageExcelName = "Image_{0}.xlsx";
         public static readonly string LanguageTextImageReplaceArg = "hashID";
         public static readonly string LanguageExcelSheetName = "Sheet1";

@@ -16,7 +16,7 @@ public class CodeLanguageHandler : OuterLanguageHandler
         return extension != Suffix || fileName == "LocalizationModule.cs";
     }
 
-    public async Task<(HashSet<string> languageHash, HashSet<string> imageHash)> GetLanguagesAsync(string inputPath)
+    public async Task<(HashSet<string> languageHash, HashSet<string> imageHash)> GetLanguagesAsync(string inputPath, Action<string> errorLogger)
     {
         if (!File.Exists(inputPath)) throw new Exception($"[CodeLanguageHandler.GetLanguagesAsync] 路径不存在：{inputPath}");
         
@@ -33,7 +33,7 @@ public class CodeLanguageHandler : OuterLanguageHandler
         return (languageHash, imageHash);
     }
 
-    public async Task LanguageReplaceAsync(string inputPath, ConcurrentDictionary<string, int> languageDic, ConcurrentDictionary<string, int> imageDic)
+    public async Task LanguageReplaceAsync(string inputPath, ConcurrentDictionary<string, int> languageDic, ConcurrentDictionary<string, int> imageDic, Action<string> errorLogger)
     {
         if (!File.Exists(inputPath)) throw new Exception($"[CodeLanguageHandler.LanguageReplaceAsync] 路径不存在：{inputPath}");
         
@@ -46,7 +46,10 @@ public class CodeLanguageHandler : OuterLanguageHandler
         {
             var source = m.Groups[1].Value;
             if (!languageDic.TryGetValue(source, out int hashId))
-                throw new Exception($"文件: {inputPath}, 字段: {source};  没有生成对应的多语言文本");
+            {
+                errorLogger($"文件: {inputPath}, 字段: {source};  没有生成对应的多语言文本");
+                return m.Groups[0].Value;
+            }
 
             modified = true;
             return $"LocalizationModule.GetStr({hashId})/*{source}*/";
@@ -54,9 +57,12 @@ public class CodeLanguageHandler : OuterLanguageHandler
         newContent = imageRegex.Replace(newContent, m =>
         {
             var source = m.Groups[1].Value;
-            if (!languageDic.TryGetValue(source, out int hashId))
-                throw new Exception($"文件: {inputPath}, 字段: {source};  没有生成对应的多语言文本");
-
+            if (!imageDic.TryGetValue(source, out int hashId))
+            {
+                errorLogger($"文件: {inputPath}, 字段: {source};  没有生成对应的多语言文本");
+                return m.Groups[0].Value;
+            }
+            
             modified = true;
             return $"LocalizationModule.GetImgPath({hashId})/*{source}*/";
         });
@@ -64,7 +70,7 @@ public class CodeLanguageHandler : OuterLanguageHandler
         if (modified) await File.WriteAllTextAsync(inputPath, newContent);
     }
 
-    public async Task LanguageRevertAsync(string inputPath, ConcurrentDictionary<int, string> languageDic, ConcurrentDictionary<int, string> imageDic)
+    public async Task LanguageRevertAsync(string inputPath, ConcurrentDictionary<int, string> languageDic, ConcurrentDictionary<int, string> imageDic, Action<string> errorLogger)
     {
         if (!File.Exists(inputPath)) throw new Exception($"[CodeLanguageHandler.LanguageRevertAsync] 路径不存在：{inputPath}");
         

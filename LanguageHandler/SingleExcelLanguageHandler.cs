@@ -117,10 +117,16 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             if (!dic.TryGetValue(str, out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {str} 没有生成对应的多语言文本");
-                                continue;
+                                string value = CSharpExcelHandler.Instance.ExcelType2ScriptType(baseType, str, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                                if (baseType == "string") value = $"\"{value}\"";
+                                else if (baseType == "bool") value = value?.ToLower();
+                                sb.Append(value).Append(','); 
                             }
-                            string newValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
-                            sb.Append(newValue).Append(',');
+                            else
+                            {
+                                string newValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
+                                sb.Append(newValue).Append(',');
+                            }
                         }
                     }
                     else
@@ -156,9 +162,11 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             if (!dic.TryGetValue(kvStrArr[0], out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {kvStrArr[0]} 没有生成对应的多语言文本");
-                                continue;
+                                kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                                if (kType == "string") kValue = $"\"{kValue}\"";
+                                else if (kType == "bool") kValue = kValue?.ToLower();
                             }
-                            kValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
+                            else kValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                         }
                         else
                         {
@@ -175,9 +183,11 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             if (!dic.TryGetValue(kvStrArr[1], out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {kvStrArr[1]} 没有生成对应的多语言文本");
-                                continue;
+                                vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                                if (vType == "string") vValue = $"\"{vValue}\"";
+                                else if (vType == "bool") vValue = vValue?.ToLower();
                             }
-                            vValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
+                            else vValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                         }
                         else
                         {
@@ -200,9 +210,11 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                         if (!dic.TryGetValue(fieldInfo.Value, out int hashId))
                         {
                             LogMessageHandler.AddError($"表: {scriptName}, 字段: {fieldInfo.Value} 没有生成对应的多语言文本");
-                            continue;
+                            filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldInfo.Value, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                            if (fieldInfo.Type == "string") filedValue = $"\"{filedValue}\"";
+                            else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();   
                         }
-                        filedValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
+                        else filedValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                     }
                     else
                     {

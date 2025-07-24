@@ -201,22 +201,14 @@ internal class CommonExcelLanguageHandler : ILanguageHandler
                     if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationImg.k)
                     {
                         var dic = fieldInfo.LocalizationTxt.k ? languageDic : imageDic;
-                        if (!dic.TryGetValue(keyData, out int hashId))
-                        {
-                            LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {keyData}; Address: {cell.Address}; 没有生成对应的多语言文本");
-                            continue;
-                        }
-                        keyData = hashId.ToString();
+                        if (dic.TryGetValue(keyData, out int hashId)) keyData = hashId.ToString();
+                        else LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {keyData}; Address: {cell.Address}; 没有生成对应的多语言文本");
                     }
                     if (fieldInfo.LocalizationTxt.v || fieldInfo.LocalizationImg.v)
                     {
                         var dic = fieldInfo.LocalizationTxt.v ? languageDic : imageDic;
-                        if (!dic.TryGetValue(valueData, out int hashId))
-                        {
-                            LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {valueData}; Address: {nextCell.Address}; 没有生成对应的多语言文本");
-                            continue;
-                        }
-                        valueData = hashId.ToString();
+                        if (dic.TryGetValue(valueData, out int hashId)) valueData = hashId.ToString();
+                        else LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {valueData}; Address: {nextCell.Address}; 没有生成对应的多语言文本");
                     }
                     scriptHandler.AddScriptMap(messageName, fieldInfo.Name, fieldInfo.Type, keyData, valueData);
                 }
@@ -225,12 +217,8 @@ internal class CommonExcelLanguageHandler : ILanguageHandler
                     if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v || fieldInfo.LocalizationImg.k || fieldInfo.LocalizationImg.v)
                     {
                         var dic = (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) ? languageDic : imageDic;
-                        if (!dic.TryGetValue(columnContent, out int hashId))
-                        {
-                            LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {columnContent}; Address: {cell.Address}; 没有生成对应的多语言文本");
-                            continue;
-                        }
-                        columnContent = hashId.ToString();
+                        if (dic.TryGetValue(columnContent, out int hashId)) columnContent = hashId.ToString();
+                        else LogMessageHandler.AddError($"表: {messageName}-{sheet.Name}, 字段: {columnContent}; Address: {cell.Address}; 没有生成对应的多语言文本");
                     }
                     
                     if (ExcelUtil.IsBaseType(fieldInfo.Type) || ExcelUtil.IsEnumType(fieldInfo.Type))
