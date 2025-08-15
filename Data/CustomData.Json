@@ -27,7 +27,10 @@
     "LanguageBackupDir": "D:\\Work\\GenesisRelic\\LanguageBackUp",
     "SourceLanguage": "zh_CN",
     "LanguageReplaceMethod": "DingFrame.Module.Localization.LocalizationModule.GetStr(hashID)",
-    "ImageReplaceMethod": "DingFrame.Module.Localization.LocalizationModule.GetImgPath(hashID)"
+    "ImageReplaceMethod": "DingFrame.Module.Localization.LocalizationModule.GetImgPath(hashID)",
+    "AzureEndpoint": "",
+    "AzureApiKey": "",
+    "AzureAraea": ""
   },
   "PreHanleProgramFile": null,
   "PreHanleProgramArgument": null,

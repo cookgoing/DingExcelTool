@@ -45,12 +45,13 @@ internal class CSharpLanguageHandler : Singleton<CSharpLanguageHandler>, IScript
                                     idn.Identifier.Text == filed)),
                     (accNode, _) =>
                     {
-                        string replaceFucStr = replaceFuc.Replace(LanguageCfg.LanguageTextImageReplaceArg, $"int.Parse({filed})");
                         var newBody = (BlockSyntax)SyntaxFactory.ParseStatement($@"
 {{
 	if ({languageFieldName} != null) return {languageFieldName};
 
-	{languageFieldName} = {replaceFucStr};
+    if (int.TryParse({filed}, out int {LanguageCfg.LanguageTextImageReplaceArg})) {languageFieldName} = {replaceFuc};
+    else {languageFieldName} = {filed};
+
     return {languageFieldName};
 }}").WithTriviaFrom(accNode.Body!);
                         
@@ -102,7 +103,6 @@ internal class CSharpLanguageHandler : Singleton<CSharpLanguageHandler>, IScript
                                     idn.Identifier.Text == arrField)),
                     (accNode, _) =>
                     {
-                        string replaceFucStr = replaceFuc.Replace(LanguageCfg.LanguageTextImageReplaceArg, $"int.Parse({arrField}[i])");
                         var newBody = (BlockSyntax)SyntaxFactory.ParseStatement($@"
 {{
     if ({languageArrName} != null) return {languageArrName};
@@ -110,7 +110,8 @@ internal class CSharpLanguageHandler : Singleton<CSharpLanguageHandler>, IScript
     {languageArrName} = new();
     for (int i = 0; i < {arrField}.Count; ++i)
     {{
-        {languageArrName}.Add({replaceFucStr});
+        if (int.TryParse({arrField}[i], out int {LanguageCfg.LanguageTextImageReplaceArg})) {languageArrName}.Add({replaceFuc});
+        else {languageArrName}.Add({arrField}[i]);
     }}
 
     return {languageArrName};
@@ -166,8 +167,9 @@ internal class CSharpLanguageHandler : Singleton<CSharpLanguageHandler>, IScript
                                     idn.Identifier.Text == mapFieldName)),
                     (accNode, _) =>
                     {
-                        string keyStr = replaceMapKey ? repalceFuc.Replace(LanguageCfg.LanguageTextImageReplaceArg, "int.Parse(kv.Key)") : "kv.Key";
-                        string valueStr = replaceMapValue ? repalceFuc.Replace(LanguageCfg.LanguageTextImageReplaceArg, "int.Parse(kv.Value)") : "kv.Value";
+                        string key = "keyStr", value = "valueStr";
+                        string keyStr = $"string {key} = " + (replaceMapKey ? $"if (int.TryParse(kv.Key, out int {LanguageCfg.LanguageTextImageReplaceArg})) {repalceFuc} else kv.Key;" : "kv.Key;");
+                        string valueStr = $"string {value} = " + (replaceMapValue ? $"if (int.TryParse(kv.Value, out int {LanguageCfg.LanguageTextImageReplaceArg})) {repalceFuc} else kv.Value;" : "kv.Value;");
                         // 用 ParseBlock 方式构造新的多行 BlockSyntax
                         // 注意我们手动写上 {} 并在最外层 ParseStatement
                         var newBody = (BlockSyntax)SyntaxFactory.ParseStatement(@$"
@@ -177,7 +179,9 @@ internal class CSharpLanguageHandler : Singleton<CSharpLanguageHandler>, IScript
     {languageMapName} = new();
     foreach (var kv in {mapFieldName})
     {{
-        {languageMapName}.Add({keyStr}, {valueStr});
+        {keyStr}
+        {valueStr}
+        {languageMapName}.Add({key}, {value});
     }}
 
     return {languageMapName};

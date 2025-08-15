@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Azure;
+using Azure.AI.Translation.Text;
 using ClosedXML.Excel;
 using ConcurrentCollections;
 using Data;
@@ -34,6 +36,18 @@ internal class LanguageManager : Singleton<LanguageManager>
     
     private CancellationTokenSource cts;
     private ParallelOptions options;
+    
+    private TextTranslationClient _translationClient;
+    private TextTranslationClient TranslationClient
+    {
+        get
+        {
+            if (_translationClient != null) return _translationClient;
+            
+            var credential = new AzureKeyCredential(Data.Language.AzureApiKey);
+            return _translationClient = new TextTranslationClient(credential, new Uri(Data.Language.AzureEndpoint), Data.Language.AzureAraea);
+        }
+    }
 
     public LanguageManager()
     {
@@ -125,7 +139,7 @@ internal class LanguageManager : Singleton<LanguageManager>
         return (type, obj);
     }
     
-    public async Task<bool> ExcelGenerate()
+    public async Task<bool> ExcelGenerate(bool autoTranslation)
     {
         await DynamicScriptAsync();
         bool result = await ExcelManager.Instance.GenerateExcelHeadInfo();
@@ -211,8 +225,8 @@ internal class LanguageManager : Singleton<LanguageManager>
         });
 
         BackupLanguageExcel();
-        GenerateLanguageExcel(languages, true);
-        GenerateLanguageExcel(images, false);
+        GenerateLanguageExcel(languages, true, autoTranslation);
+        GenerateLanguageExcel(images, false, autoTranslation);
         return result;
     }
 
@@ -513,7 +527,7 @@ internal class LanguageManager : Singleton<LanguageManager>
             ExcelUtil.CopyDirectoryWithAutoRename(languageExcelDir, Data.Language.LanguageBackupDir);
         }
     }
-    private void GenerateLanguageExcel(ConcurrentHashSet<string> hashSet, bool isLanguage)
+    private async void GenerateLanguageExcel(ConcurrentHashSet<string> hashSet, bool isLanguage, bool autoTranslation)
     {
         if (hashSet == null || hashSet.Count == 0) return;
         
@@ -588,10 +602,13 @@ internal class LanguageManager : Singleton<LanguageManager>
                 int row = 5;
                 foreach (var src in hashSet)
                 {
-                    int id = LanguageUtils.Hash32Bytes(src); 
+                    int id = LanguageUtils.Hash32Bytes(src);
+                    string text = string.Empty;
+                    if (isLanguage && autoTranslation) text = await TranslateAsync(src, Data.Language.SourceLanguage, lang);
+
                     ws.Cell(row, 2).Value = id;
                     ws.Cell(row, 3).Value = src;
-                    ws.Cell(row, 4).Value = "";
+                    ws.Cell(row, 4).Value = text;
                     row++;
                 }
             }
@@ -635,5 +652,42 @@ internal class LanguageManager : Singleton<LanguageManager>
     {
         foreach (var item in other) 
             hashSet.Add(item); 
+    }
+    
+    private string AzureLanguageType(LanguageType value)
+    => value switch
+    {
+        LanguageType.zh_CN => "zh-Hans",
+        LanguageType.zh_TW => "zh-Hant",
+        LanguageType.ja => "ja",
+        LanguageType.ko => "ko",
+        LanguageType.en => "en",
+        LanguageType.fr => "fr",
+        LanguageType.de => "de",
+        LanguageType.ru => "ru",
+        LanguageType.es => "es",
+        LanguageType.pt => "pt",
+        _ => "zh-Hans",
+    };
+    private async Task<string> TranslateAsync(string inputText, LanguageType from, LanguageType to)
+    {
+        string fromLang = AzureLanguageType(from);
+        string toLang = AzureLanguageType(to);
+        try
+        {
+            var response = await TranslationClient.TranslateAsync(
+                sourceLanguage: fromLang,
+                targetLanguages: new[] { toLang },
+                content: new[] { inputText }
+            );
+
+            return response.Value[0].Translations[0].Text;
+        }
+        catch (Exception ex)
+        {
+            LogMessageHandler.LogException(ex);
+        }
+        
+        return null;
     }
 }

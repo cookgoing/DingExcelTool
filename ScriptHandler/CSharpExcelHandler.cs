@@ -47,6 +47,7 @@
                 "System.Private.CoreLib.dll",
                 "System.Runtime.dll",
                 "System.Runtime.Extensions.dll",
+                "System.Collections.dll",
                 "Google.Protobuf.dll",
             }.Contains(Path.GetFileName(p))).Select(p => MetadataReference.CreateFromFile(p)).ToList();
             

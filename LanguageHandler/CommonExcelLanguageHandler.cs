@@ -15,6 +15,8 @@ using ScriptHandler;
 
 internal class CommonExcelLanguageHandler : ILanguageHandler
 {
+    private readonly object _lock = new object();
+    
     public virtual bool IsSkip(string inputPath)
     {
         if (inputPath.StartsWith(ExcelManager.Instance.Data.Language.LanguageExcelDir)) return true;
@@ -102,8 +104,6 @@ internal class CommonExcelLanguageHandler : ILanguageHandler
             return;
         }
         
-        string commonProtoScriptContent = commonProtoScriptContentSB.ToString();
-
         IScriptExcelHandler scriptHandler = ExcelUtil.GetScriptExcelHandler(scriptType);
         PlatformType platform = isClient ? PlatformType.Client : PlatformType.Server;
         string excelFileName = Path.GetFileNameWithoutExtension(inputPath);
@@ -127,28 +127,31 @@ internal class CommonExcelLanguageHandler : ILanguageHandler
             foreach (ExcelFieldInfo fieldInfo in headInfo.Fields)
             {
                 if (!fieldInfo.LocalizationTxt.k && !fieldInfo.LocalizationTxt.v && !fieldInfo.LocalizationImg.k && !fieldInfo.LocalizationImg.v) continue;
-                
-                if (ExcelUtil.IsMapType(fieldInfo.Type))
+
+                lock (_lock)
                 {
-                    string mapFieldName = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
-                    if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) commonProtoScriptContent = await scriptLanguageHandler.ReplaceMapFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, mapFieldName, languageReplaceFucName, fieldInfo.LocalizationTxt.k, fieldInfo.LocalizationTxt.v);
-                    else commonProtoScriptContent = await scriptLanguageHandler.ReplaceMapFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, mapFieldName, imageReplaceFucName, fieldInfo.LocalizationImg.k, fieldInfo.LocalizationImg.v);
-                }
-                else if (ExcelUtil.IsArrType(fieldInfo.Type))
-                {
-                    string arrField = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
-                    string fucName = (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) ? languageReplaceFucName : imageReplaceFucName;
-                    commonProtoScriptContent = await scriptLanguageHandler.ReplaceArrFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, arrField, fucName);
-                }
-                else
-                {
-                    string field = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
-                    string fucName = (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) ? languageReplaceFucName : imageReplaceFucName;
-                    commonProtoScriptContent = await scriptLanguageHandler.ReplaceGetterFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, field, fucName);
+                    string commonProtoScriptContent = commonProtoScriptContentSB.ToString();
+                    if (ExcelUtil.IsMapType(fieldInfo.Type))
+                    {
+                        string mapFieldName = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
+                        if (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) commonProtoScriptContent = scriptLanguageHandler.ReplaceMapFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, mapFieldName, languageReplaceFucName, fieldInfo.LocalizationTxt.k, fieldInfo.LocalizationTxt.v).Result;
+                        else commonProtoScriptContent = scriptLanguageHandler.ReplaceMapFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, mapFieldName, imageReplaceFucName, fieldInfo.LocalizationImg.k, fieldInfo.LocalizationImg.v).Result;
+                    }
+                    else if (ExcelUtil.IsArrType(fieldInfo.Type))
+                    {
+                        string arrField = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
+                        string fucName = (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) ? languageReplaceFucName : imageReplaceFucName;
+                        commonProtoScriptContent = scriptLanguageHandler.ReplaceArrFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, arrField, fucName).Result;
+                    }
+                    else
+                    {
+                        string field = $"{NameConverter.ConvertToCamelCase(fieldInfo.Name)}_";
+                        string fucName = (fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v) ? languageReplaceFucName : imageReplaceFucName;
+                        commonProtoScriptContent = scriptLanguageHandler.ReplaceGetterFieldInClassProperty(commonProtoScriptContent, headInfo.MessageName, field, fucName).Result;
+                    }
+                    commonProtoScriptContentSB.Clear().Append(commonProtoScriptContent);
                 }
             }
-
-            commonProtoScriptContentSB.Clear().Append(commonProtoScriptContent);
         }
 
         await Task.CompletedTask;

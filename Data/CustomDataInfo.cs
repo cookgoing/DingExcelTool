@@ -22,6 +22,9 @@
             public LanguageType SourceLanguage;
             public string LanguageReplaceMethod;
             public string ImageReplaceMethod;
+            public string AzureEndpoint;
+            public string AzureApiKey;
+            public string AzureAraea;
         }
 
         public string ExcelInputRootDir;

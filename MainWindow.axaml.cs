@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         ClearOutputDir,
         RestoreDefaults,
         GenerateLanguageExcels,
+        GenerateAndTranslateLanguageExcels,
         LanguageReplace,
         LanguageRevert,
     }
@@ -39,6 +40,7 @@ public partial class MainWindow : Window
         {ExcuteTypeEn.ClearOutputDir, "清空缓存"},
         {ExcuteTypeEn.RestoreDefaults, "恢复默认值"},
         {ExcuteTypeEn.GenerateLanguageExcels, "生成多语言表"},
+        {ExcuteTypeEn.GenerateAndTranslateLanguageExcels, "生成并自动翻译多语言表"},
         {ExcuteTypeEn.LanguageReplace, "多语言替换+导表"},
         {ExcuteTypeEn.LanguageRevert, "多语言还原+导表"},
     };
@@ -47,9 +49,15 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+        {
+            var ex = (Exception)e.ExceptionObject;
+            File.WriteAllText("crashlog.txt", ex.ToString());
+        };
+        
         initedUI = false;
         InitializeComponent();
-        RefreshImg();
+        RefreshLogo();
 
         LogMessageHandler.Init(this);
 
@@ -105,7 +113,7 @@ public partial class MainWindow : Window
         ExcelManager.Instance.Clear();
     }
 
-    private void RefreshImg()
+    private void RefreshLogo()
     {
         var iconPath = Path.Combine(AppContext.BaseDirectory, "images", "teamLogo.png");
         var bitmap = new Bitmap(iconPath);
@@ -285,9 +293,11 @@ public partial class MainWindow : Window
                     LogMessageHandler.AddInfo("恢复默认值 完成");
                     break;
                 case ExcuteTypeEn.GenerateLanguageExcels:
+                case ExcuteTypeEn.GenerateAndTranslateLanguageExcels:
+                    bool autoTranslation = excutionType == ExcuteTypeEn.GenerateAndTranslateLanguageExcels;
                     stopwatch = Stopwatch.StartNew();
                     RefreshData();
-                    result = await LanguageManager.Instance.ExcelGenerate();
+                    result = await LanguageManager.Instance.ExcelGenerate(autoTranslation);
                     if (result) LogMessageHandler.AddInfo($"生成多语言表 完成!花费时间：{stopwatch.ElapsedMilliseconds / 1000f}s");
                     else LogMessageHandler.AddError("生成多语言表 出现错误，请查看具体问题");
                     break;
