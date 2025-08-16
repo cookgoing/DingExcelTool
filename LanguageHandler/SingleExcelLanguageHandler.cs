@@ -44,6 +44,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
             foreach (SingleExcelFieldInfo fieldInfo in headInfo.Fields)
             {
                 if (!fieldInfo.LocalizationTxt.k && !fieldInfo.LocalizationTxt.v && !fieldInfo.LocalizationImg.k && !fieldInfo.LocalizationImg.v) continue;
+                fieldInfo.Value = fieldInfo.Value.Replace("\\\"", "\"");
                 if (ExcelUtil.IsMapType(fieldInfo.Type))
                 {
                     string[] valueStrArr = fieldInfo.Value.Split(SpecialExcelCfg.SingleArrMapSplitSymbol);
