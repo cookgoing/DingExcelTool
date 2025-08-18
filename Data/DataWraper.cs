@@ -29,9 +29,9 @@
             public LanguageType SourceLanguage { get => languageInfo.SourceLanguage; set => languageInfo.SourceLanguage = value; }
             public string LanguageReplaceMethod { get => languageInfo.LanguageReplaceMethod; set => languageInfo.LanguageReplaceMethod = value; }
             public string ImageReplaceMethod { get => languageInfo.ImageReplaceMethod; set => languageInfo.ImageReplaceMethod = value; }
-            public string AzureEndpoint { get => languageInfo.AzureEndpoint; set => languageInfo.AzureEndpoint = value; }
-            public string AzureApiKey { get => languageInfo.AzureApiKey; set => languageInfo.AzureApiKey = value; }
-            public string AzureAraea { get => languageInfo.AzureAraea; set => languageInfo.AzureAraea = value; }
+            public string AzureEndpoint => languageInfo.AzureEndpoint;
+            public string AzureApiKey => languageInfo.AzureApiKey;
+            public string AzureAraea => languageInfo.AzureAraea;
             
             public LanguageInfo(CustomDataInfo.LanguageInfo languageInfo) =>  this.languageInfo = languageInfo;
         }

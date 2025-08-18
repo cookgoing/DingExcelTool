@@ -680,8 +680,10 @@ internal class LanguageManager : Singleton<LanguageManager>
                 targetLanguages: new[] { toLang },
                 content: new[] { inputText }
             );
-
-            return response.Value[0].Translations[0].Text;
+            
+            string reslt = response.Value[0].Translations[0].Text;
+            LogMessageHandler.AddInfo($"翻译结果：[{from} -> {to}]: {inputText} -> {reslt}");
+            return reslt;
         }
         catch (Exception ex)
         {
