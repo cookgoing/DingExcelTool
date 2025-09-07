@@ -125,6 +125,7 @@ namespace {packageName}
 
         private async Task WriteSingleExcelScript(string scriptName, string outputPath, string fieldStr)
         {
+            string fucSB = "\t\tpublic static void ResetLanguage() { }";
             using StreamWriter sw = new StreamWriter(outputPath);
             StringBuilder scriptSB = new();
 
@@ -136,6 +137,8 @@ namespace {GeneralCfg.ProtoMetaPackageName}
     public static class {scriptName}
     {{
 {fieldStr}
+
+{fucSB}
     }}
 }}
 ");
