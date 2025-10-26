@@ -317,7 +317,7 @@
 
                         return longValue;
                     case "double":
-                        if (!double.TryParse(valueStr, out double doubleValue)) throw new Exception($"[CSharpHandler] 内容不能转换。 type: {typeStr}; value: {valueStr}");
+                        if (!double.TryParse(valueStr, out double doubleValue)) throw new Exception($"[CSharpHandler] 内容不能转换。 type: {typeStr}; value: {valueStr}; tag: {tag}");
 
                         return doubleValue;
                     case "bool":

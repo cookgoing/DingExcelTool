@@ -94,7 +94,7 @@ namespace DingExcelTool.ScriptHandler
                 else
                 {
                     filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldInfo.Value, $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                    if (fieldInfo.Type == "string") filedValue = $"\"{filedValue}\"";
+                    if (fieldInfo.Type == "string") filedValue = $"@\"{filedValue}\"";
                     else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();
                 }
 
