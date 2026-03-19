@@ -61,7 +61,7 @@ namespace DingExcelTool.ScriptHandler
                     foreach (string str in valueStrArr)
                     {
                         string value = CSharpExcelHandler.Instance.ExcelType2ScriptType(baseType, str, $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                        if (baseType == "string") value = $"\"{value}\"";
+                        if (baseType == "string") value = $"@\"{value}\"";
                         else if (baseType == "bool") value = value?.ToLower();
                         sb.Append(value).Append(',');    
                     }
@@ -81,9 +81,9 @@ namespace DingExcelTool.ScriptHandler
                         string[] kvStrArr = kvStr.Split(SpecialExcelCfg.SingleMapKVSplitSymbol);
                         string kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0], $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
                         string vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1], $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                        if (kType == "string") kValue = $"\"{kValue}\"";
+                        if (kType == "string") kValue = $"@\"{kValue}\"";
                         else if (kType == "bool") kValue = kValue?.ToLower();
-                        if (vType == "string") vValue = $"\"{vValue}\"";
+                        if (vType == "string") vValue = $"@\"{vValue}\"";
                         else if (vType == "bool") vValue = vValue?.ToLower();
                         
                         sb.Append('{').Append(kValue).Append(',').Append(vValue).Append('}').Append(',');

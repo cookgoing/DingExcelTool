@@ -45,7 +45,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
             {
                 if (!fieldInfo.LocalizationTxt.k && !fieldInfo.LocalizationTxt.v && !fieldInfo.LocalizationImg.k && !fieldInfo.LocalizationImg.v) continue;
                 
-                string fieldValue = fieldInfo.Value.Replace("\\\"", "\"");
+                string fieldValue = fieldInfo.Value.Replace("\\\"", "\"").Replace("\"\"", "\"");;
                 if (ExcelUtil.IsMapType(fieldInfo.Type))
                 {
                     string[] valueStrArr = fieldValue.Split(SpecialExcelCfg.SingleArrMapSplitSymbol);
@@ -116,7 +116,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                         var fucName = fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v ? languageReplaceFucName : imageReplaceFucName;
                         foreach (string str in valueStrArr)
                         {
-                            string newStr = str.Replace("\\\"", "\"");
+                            string newStr = str.Replace("\"\"", "\"");
                             if (!dic.TryGetValue(newStr, out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {newStr} 没有生成对应的多语言文本");
@@ -137,7 +137,7 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                         foreach (string str in valueStrArr)
                         {
                             string value = CSharpExcelHandler.Instance.ExcelType2ScriptType(baseType, str, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                            if (baseType == "string") value = $"\"{value}\"";
+                            if (baseType == "string") value = $"@\"{value}\"";
                             else if (baseType == "bool") value = value?.ToLower();
                             sb.Append(value).Append(','); 
                         }
@@ -164,20 +164,20 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             needNewField = true;
                             var dic = fieldInfo.LocalizationTxt.k ? languageDic : imageDic;
                             var fucName = fieldInfo.LocalizationTxt.k? languageReplaceFucName : imageReplaceFucName;
-                            keyStr = kvStrArr[0].Replace("\\\"", "\"");
+                            keyStr = kvStrArr[0].Replace("\"\"", "\"");
                             if (!dic.TryGetValue(keyStr, out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {keyStr} 没有生成对应的多语言文本");
-                                kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, keyStr, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                                if (kType == "string") kValue = $"\"{kValue}\"";
+                                kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                                if (kType == "string") kValue = $"@\"{kValue}\"";
                                 else if (kType == "bool") kValue = kValue?.ToLower();
                             }
                             else kValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                         }
                         else
                         {
-                            kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, keyStr, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                            if (kType == "string") kValue = $"\"{kValue}\"";
+                            kValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(kType, kvStrArr[0], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                            if (kType == "string") kValue = $"@\"{kValue}\"";
                             else if (kType == "bool") kValue = kValue?.ToLower();
                         }
                         
@@ -186,20 +186,20 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             needNewField = true;
                             var dic = fieldInfo.LocalizationTxt.v ? languageDic : imageDic;
                             var fucName = fieldInfo.LocalizationTxt.v? languageReplaceFucName : imageReplaceFucName;
-                            valueStr = kvStrArr[1].Replace("\\\"", "\"");
+                            valueStr = kvStrArr[1].Replace("\"\"", "\"");
                             if (!dic.TryGetValue(valueStr, out int hashId))
                             {
                                 LogMessageHandler.AddError($"表: {scriptName}, 字段: {valueStr} 没有生成对应的多语言文本");
-                                vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, valueStr, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                                if (vType == "string") vValue = $"\"{vValue}\"";
+                                vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                                if (vType == "string") vValue = $"@\"{vValue}\"";
                                 else if (vType == "bool") vValue = vValue?.ToLower();
                             }
                             else vValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                         }
                         else
                         {
-                            vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, valueStr, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
-                            if (vType == "string") vValue = $"\"{vValue}\"";
+                            vValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(vType, kvStrArr[1], $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
+                            if (vType == "string") vValue = $"@\"{vValue}\"";
                             else if (vType == "bool") vValue = vValue?.ToLower();
                         }
 
@@ -215,10 +215,10 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                     {
                         var dic = fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v ? languageDic : imageDic;
                         var fucName = fieldInfo.LocalizationTxt.k || fieldInfo.LocalizationTxt.v ? languageReplaceFucName : imageReplaceFucName;
-                        fieldValue = fieldValue.Replace("\\\"", "\"");
-                        if (!dic.TryGetValue(fieldValue, out int hashId))
+                        string newFieldValue = fieldValue.Replace("\"\"", "\"");
+                        if (!dic.TryGetValue(newFieldValue, out int hashId))
                         {
-                            LogMessageHandler.AddError($"表: {scriptName}, 字段: {fieldValue} 没有生成对应的多语言文本");
+                            LogMessageHandler.AddError($"表: {scriptName}, 字段: {newFieldValue} 没有生成对应的多语言文本");
                             filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldValue, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
                             if (fieldInfo.Type == "string") filedValue = $"@\"{filedValue}\"";
                             else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();   
