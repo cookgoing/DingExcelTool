@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DingExcelTool"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Jerry.Ding"
 #define MyAppExeName "DingExcelTool.exe"
 
@@ -29,7 +29,7 @@ DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 OutputDir=D:\Project\AvaloniaUI\DingExcelTool\InnoSetup
-OutputBaseFilename=DingExcelToolInstall
+OutputBaseFilename=DingExcelToolInstaller_GenesisRelic
 SolidCompression=yes
 WizardStyle=modern
 
