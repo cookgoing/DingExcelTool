@@ -221,7 +221,8 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                             LogMessageHandler.AddError($"表: {scriptName}, 字段: {newFieldValue} 没有生成对应的多语言文本");
                             filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldValue, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
                             if (fieldInfo.Type == "string") filedValue = $"@\"{filedValue}\"";
-                            else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();   
+                            else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();
+                            else if (ExcelUtil.IsEnumType(fieldInfo.Type)) filedValue = $"{fieldInfo.Type}.{filedValue}";
                         }
                         else filedValue = fucName.Replace(LanguageCfg.LanguageTextImageReplaceArg, hashId.ToString());
                     }
@@ -229,7 +230,8 @@ internal class SingleExcelLanguageHandler : ILanguageHandler
                     {
                         filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldValue, $"{headInfo.ScriptName}-{fieldInfo.Name}").ToString();
                         if (fieldInfo.Type == "string") filedValue = $"@\"{filedValue}\"";
-                        else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();    
+                        else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();
+                        else if (ExcelUtil.IsEnumType(fieldInfo.Type)) filedValue = $"{fieldInfo.Type}.{filedValue}";
                     }
                 }
 

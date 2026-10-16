@@ -96,6 +96,7 @@ namespace DingExcelTool.ScriptHandler
                     filedValue = CSharpExcelHandler.Instance.ExcelType2ScriptType(fieldInfo.Type, fieldInfo.Value, $"{singleHeadInfo.ScriptName}-{fieldInfo.Name}").ToString();
                     if (fieldInfo.Type == "string") filedValue = $"@\"{filedValue}\"";
                     else if (fieldInfo.Type == "bool") filedValue = filedValue?.ToLower();
+                    else if (ExcelUtil.IsEnumType(fieldInfo.Type)) filedValue = $"{fieldInfo.Type}.{filedValue}";
                 }
 
                 fieldSB.Append($"\t\tpublic readonly static {CSharpExcelHandler.Instance.ExcelType2ScriptTypeStr(fieldInfo.Type)} {fieldInfo.Name} = {filedValue};").AppendLine(string.IsNullOrEmpty(fieldInfo.Comment) ? null : "//" + fieldInfo.Comment);
